@@ -1,0 +1,78 @@
+Sending build context to Docker daemon   12.8kB
+Step 1/17 : FROM postgres:13
+13: Pulling from library/postgres
+Digest: sha256:a4c555b2f369cb7f34a7d8856bb64b0374e5a068457f03fdc016357daa189c69
+Status: Downloaded newer image for postgres:13
+ ---> b67cf799bada
+Step 2/17 : RUN apt-get update && apt-get install -y     autoconf     gcc     less     make     postgresql-server-dev-13     postgresql-plpython3-13     python3     python3-pip     sudo     wget
+ ---> Using cache
+ ---> bd851b090135
+Step 3/17 : RUN apt-get install -y     libcurl4-gnutls-dev     libexpat1-dev gettext     libz-dev     libssl-dev     asciidoc     xmlto     docbook2x
+ ---> Using cache
+ ---> c302766d8d3e
+Step 4/17 : RUN cd /tmp  && wget https://www.kernel.org/pub/software/scm/git/git-2.30.1.tar.gz  && tar -xzf git-2.30.1.tar.gz  && cd git-2.30.1  && ./configure  && make  && make install  && rm -rf /tmp/git-2.30.1
+ ---> Using cache
+ ---> f8d9eeed5cef
+Step 5/17 : RUN cd /tmp  && git clone https://github.com/postgrespro/rum  && cd rum  && git checkout 1.3.7  && make USE_PGXS=1  && make USE_PGXS=1 install  && rm -rf /tmp/rum
+ ---> Using cache
+ ---> 600c6e42e946
+Step 6/17 : ADD https://api.github.com/repos/mikeizbicki/pspacy/git/refs/heads/master /tmp/pspacy.version
+
+ ---> Using cache
+ ---> 97e37c5ffb4c
+Step 7/17 : RUN cd /tmp  && git clone https://github.com/mikeizbicki/pspacy  && cd pspacy  && sh install_dependencies.sh  && make USE_PGXS=1  && make USE_PGXS=1 install
+ ---> Using cache
+ ---> 62e53fd00822
+Step 8/17 : ADD https://api.github.com/repos/mikeizbicki/pgrollup/git/refs/heads/master /tmp/pg_rollup.version
+
+ ---> Using cache
+ ---> 433e842166eb
+Step 9/17 : RUN cd /tmp  && git clone https://github.com/mikeizbicki/pgrollup  && cd pgrollup  && sh install_dependencies.sh  && pip3 install -r requirements.txt  && pip3 install .  && make USE_PGXS=1  && make USE_PGXS=1 install  && rm -rf /tmp/pgrollup
+ ---> Using cache
+ ---> 284fdb37d58b
+Step 10/17 : ADD https://api.github.com/repos/mikeizbicki/metahtml/git/refs/heads/master /tmp/metahtml.version
+
+ ---> Using cache
+ ---> 20a611957370
+Step 11/17 : RUN apt-get install -y libxml2-dev libxslt1-dev
+ ---> Using cache
+ ---> c00c98781435
+Step 12/17 : RUN cd /tmp  && git clone --filter=blob:none --no-checkout https://github.com/mikeizbicki/metahtml  && cd metahtml  && git sparse-checkout init  && git sparse-checkout set '!/tests/.cache' '/*'  && git checkout master  && pip3 install -r requirements.txt  && python3 scripts/generate_tests_json.py > /tmp/metahtml/all_tests.json
+ ---> Using cache
+ ---> 3967dcfde5cd
+Step 13/17 : RUN pip3 install psycopg2
+ ---> Running in 05f66d1b10be
+Collecting psycopg2
+  Downloading psycopg2-2.9.3.tar.gz (380 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 380.6/380.6 KB 15.8 MB/s eta 0:00:00
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Building wheels for collected packages: psycopg2
+  Building wheel for psycopg2 (setup.py): started
+  Building wheel for psycopg2 (setup.py): finished with status 'done'
+  Created wheel for psycopg2: filename=psycopg2-2.9.3-cp39-cp39-linux_x86_64.whl size=485628 sha256=08ecbf37065ea1574ea80dace5ccc2af367c113c0f7e90c6f553d32a21af1310
+  Stored in directory: /root/.cache/pip/wheels/b3/a1/6e/5a0e26314b15eb96a36263b80529ce0d64382540ac7b9544a9
+Successfully built psycopg2
+Installing collected packages: psycopg2
+Successfully installed psycopg2-2.9.3
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+[0mRemoving intermediate container 05f66d1b10be
+ ---> f8eee9558f8a
+Step 14/17 : RUN cp /tmp/pspacy/pspacy.py /tmp/metahtml
+ ---> Running in 8fb473eac7b9
+Removing intermediate container 8fb473eac7b9
+ ---> 7d63f93f723f
+Step 15/17 : WORKDIR /tmp/metahtml
+ ---> Running in c09acd2d62de
+Removing intermediate container c09acd2d62de
+ ---> e349075823e1
+Step 16/17 : COPY ./downloader_warc.py /tmp/metahtml
+ ---> 6325f7a4a1f6
+Step 17/17 : ENTRYPOINT ["python3", "downloader_warc.py"]
+ ---> Running in b5f8f17eff30
+Removing intermediate container b5f8f17eff30
+ ---> 9d84d840dc8d
+Successfully built 9d84d840dc8d
+Successfully tagged novichenko/downloader_warc:latest
+warc=CC-MAIN-20210416100222-20210416130222-00014.warc.gz
+c37453c1229dcad130fcbe4820d7564322562c3426eabeb82794db8b0c4dcacc

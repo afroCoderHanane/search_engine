@@ -661,4 +661,36 @@ CREATE MATERIALIZED VIEW metahtml_rollup_insert AS (
 
 COMMIT;
 
+/*
+SELECT                                   +
+           |         id,                              +
+           |         jsonb->$1->$2->>$3 AS title,     +
+           |         jsonb->$4->$5->>$6 AS description+
+           |     FROM metahtml                        +
+           |     WHERE                                +
+           |         to_tsquery($7, $8) @@ content AND+
+           |         jsonb->$9->$10->>$11 = $12       +
+           |     OFFSET $13                           +
+                 LIMIT $14;
+*/
 
+/*
+\d metahtml
+                                   Table "public.metahtml"
+   Column    |           Type           | Collation | Nullable |           Default            
+-------------+--------------------------+-----------+----------+------------------------------
+ id          | bigint                   |           | not null | generated always as identity
+ id_source   | integer                  |           | not null | 
+ accessed_at | timestamp with time zone |           | not null | 
+ inserted_at | timestamp with time zone |           | not null | now()
+ url         | text                     |           | not null | 
+ jsonb       | jsonb                    |           | not null | 
+ title       | tsvector                 |           |          | 
+ content     | tsvector                 |           |          | 
+Indexes:
+    "metahtml_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "metahtml_id_source_fkey" FOREIGN KEY (id_source) REFERENCES source(id)
+*/
+create index on metahtml using rum(title);
+create index on metahtml using rum(content);

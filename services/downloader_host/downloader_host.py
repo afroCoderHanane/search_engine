@@ -66,20 +66,26 @@ def process_cdx_url(connection, url, batch_size=100, source='cc', **kwargs):
         # process only urls with 200 status code (i.e. successful)
         if result['status']=='200':
             log.info('fetching result; progress='+str(i)+'/'+str(estimated_urls)+'={:10.4f}'.format(i/estimated_urls)+' url='+result['url'])
-
+            
+            try:
             # FIXME: extract a warc record from the result variable
+                record = result.fetch_warc_record()
+             
 
             # FIXME: extract the information from the warc record
-            url = None
-            accessed_at = None
-            html = None
-            log.debug("url="+url)
+                url  = record.rec_headers.get_header('WARC-Target-URI')
+                accessed_at = record.rec_headers.get_header('WARC-Date')
+                html = record.content_stream().read()
+                log.debug("url="+url)
 
             # FIXME: extract the metainfo using the metahtml library
             # HINT: look how this is done in the downloader_warc.py file and copy that
-            meta = None
-            pspacy_title = None
-            pspacy_content = None
+                meta = metahtml.parse(html, url)
+                pspacy_title = pspacy.lemmatize(meta['language']['best']['value'], meta['title']['best']['value'])
+                pspacy_content = pspacy.lemmatize(meta['language']['best']['value'], meta['title']['best']['value'])
+            except Exception as e:
+                print(e)
+                continue
 
             # append to the batch
             batch.append({
