@@ -213,7 +213,9 @@ There are two steps:
 
 1. Edit this README file to contain the RUM query you created above right here:
     ```
-    CREATE INDEX ...
+    create index on metahtml using rum(content);
+    create index on metahtml using rum(title);
+    
     ```
 
 1. Edit this README file with the results of the following queries in psql.
@@ -222,23 +224,104 @@ There are two steps:
     1. This query shows the total number of webpages loaded:
        ```
        select count(*) from metahtml;
+       
        ```
+       ```
+       count  
+       ----
+       442567 
+      
+       ```
+        
 
     1. This query shows the number of webpages loaded / hour:
        ```
        select * from metahtml_rollup_insert order by insert_hour desc limit 100;
+       
+       ```
+       
+       ```
+       
+       hll_count  |  url   | hostpathquery | hostpath |  host  |      insert_hour       
+       -----------+--------+---------------+----------+--------+------------------------
+                1 |  50426 |         47491 |    46889 |  41670 | 2022-05-07 04:00:00+00
+                2 |  90710 |         87855 |    88189 |  77875 | 2022-05-07 00:00:00+00
+                4 | 128387 |        132333 |   128737 | 101134 | 2022-05-06 23:00:00+00
+                4 | 165540 |        165086 |   159237 | 127068 | 2022-05-06 19:00:00+00
+                2 |  10596 |         10373 |    10147 |   8921 | 2022-05-06 18:00:00+00
+
+       
        ```
 
     1. This query shows the hostnames that you have downloaded the most webpages from:
        ```
        select * from metahtml_rollup_host order by hostpath desc limit 100;
        ```
+       
+       ```
+         url | hostpathquery | hostpath |                 host                 
+        -----+---------------+----------+--------------------------------------
+         79  |            79 |       70 | com,google)
+          66 |            66 |       65 | com,imdb)
+          56 |            56 |       56 | com,tripadvisor,no)
+          55 |            55 |       55 | com,vimeo)
+          51 |            51 |       51 | org,wikipedia,nl)
+          47 |            47 |       47 | com,dx)
+          46 |            46 |       46 | com,pressreader)
+          44 |            44 |       44 | com,scribd)
+          44 |            44 |       44 | org,wikipedia,fr)
+          42 |            42 |       42 | com,businessinsider)
+          42 |            42 |       42 | com,minube)
+          41 |            41 |       41 | com,alibaba)
+          41 |            41 |       41 | com,pond5)
+          41 |            41 |       41 | jp,atwiki,w)
+          41 |            41 |       41 | me,vid)
+          40 |            40 |       40 | com,nytimes)
+          40 |            40 |       40 | org,worldcat,experimental)
+          39 |            39 |       39 | com,flickr)
+          39 |            39 |       39 | com,msn)
+          39 |            39 |       39 | com,wikivisually)
+          38 |            38 |       38 | lt,bnc)
+          38 |            38 |       38 | com,thefreedictionary)
+          37 |            37 |       37 | com,addustour,adserver)
+          37 |            37 |       37 | com,pinterest,co)
+          37 |            37 |       37 | il,co,tapuz)
+          36 |            36 |       36 | li,paper)
+          36 |            36 |       36 | com,si)
+          40 |            40 |       36 | com,macys)
+          36 |            36 |       36 | com,grainger)
+          35 |            35 |       35 | com,economist)
+          35 |            35 |       35 | com,dw)
+          35 |            35 |       35 | ru,mail,news)
+          34 |            34 |       34 | edu,purdue,itap,wiki)
+          34 |            34 |       34 | nl,tripadvisor)
+          34 |            34 |       34 | gov,sec,adviserinfo)
+          42 |            42 |       34 | com,google,docs)
+          34 |            34 |       34 | com,thestreet)
+          34 |            34 |       34 | com,ipernity)
+          34 |            34 |       34 | com,cleveland,businessfinder)
+          33 |            33 |       33 | ru,myshared)
+          33 |            33 |       33 | edu,illinois,carli,collections-test)
+          33 |            33 |       33 | com,marinetraffic)
+          33 |            33 |       33 | com,theguardian)
+          32 |            32 |       32 | com,google,drive)
+          32 |            32 |       32 | org,wikipedia,en)
+          32 |            32 |       32 | com,pinterest,br)
+          32 |            32 |       32 | com,justmommies)
+          32 |            32 |       32 | com,chicagotribune,articles)
+          32 |            32 |       32 | com,pinterest,no)
+          32 |            32 |       32 | com,tripadvisor,cn)
+          32 |            32 |       32 | com,pinterest,cz)
+          31 |            31 |       31 | org,wikipedia,es)
+
+       ```
 
 1. Take a screenshot of an interesting search result.
-   Ensure that the timer on the bottom of the webpage is included in the screenshot.
-   Add the screenshot to your git repo, and modify the `<img>` tag below to point to the screenshot.
+   
+![Screenshot from 2022-05-09 14-39-47](https://user-images.githubusercontent.com/49354774/167503293-12fb2e19-d0b0-4a73-9475-e3042d2a8b36.png)
 
-   <img src='screenshot.png' />
+   ![Screenshot from 2022-05-09 14-42-20](https://user-images.githubusercontent.com/49354774/167503466-7c5c0550-71a9-4b59-b2b0-85448a93a544.png)
+
 
 1. Commit and push your changes to github.
 
